@@ -2,9 +2,9 @@ import nltk
 import streamlit as st
 import pickle
 from nltk.corpus import stopwords
-nltk.download('stopwords')
 from nltk.stem import PorterStemmer
-import string
+
+
 
 
 def transform(text):
@@ -27,3 +27,22 @@ def transform(text):
 
     return " ".join(cleaned)
 
+st.title('SPAM CLASSIFIER')
+# take input
+input_txt = st.text_input("Enter the message")
+# loading the vectorizer and model
+tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
+model = pickle.load(open('model.pkl','rb'))
+
+btn = st.button('Predict')
+if btn:
+    # preprocess the input text
+    transformed_txt = transform(input_txt)
+    vectorized_txt = tfidf.transform([transformed_txt])
+    # feed it to model
+    output = model.predict(vectorized_txt)[0]
+    # output the result
+    if output == 1:
+        st.header('SPAM')
+    else:
+        st.header('NOT SPAM')
